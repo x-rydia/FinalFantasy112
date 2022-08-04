@@ -3,19 +3,32 @@ from cast import cast
 from cmu_112_graphics import *
 from environments import *
 import math
-
 from textures import *
+
+from levels.towerlevel import *
+
+#There is an error in tkinter that causes a crash due
+#to recursion depth. IT likely has something to do withw
+#The number of lines on the screen.
+#This is a workaround, I have yet to get the same error 
+#now that I increased the limit
+
+#This bug fix came from: https://stackoverflow.com/questions/3323001/what-is-the-maximum-recursion-depth-in-python-and-how-to-increase-it
+import sys 
+sys.setrecursionlimit(100000)
+
 
 ###### MODEL ######
 def appStarted(app):
-    app.view = View(map1, False)
+    app.view = View(WALLS, CEILING, FLOORS, False)
     app.lines = cast(app)
-    app.colors = {
-        0: "white",
-        1: WOOD_PLANK,
-        2: STONE_BRICK,
-        3: "blue",
-    }
+    
+    #SET THE TEXTURE PACK
+    app.tp = TEST1
+    app.colors = app.tp.wallTextures
+    app.floorTexture = app.tp.floor
+    app.ceilingTexture = app.tp.ceiling
+
     app.miniMapState = False
     app.miniMapCellWidth = 10
     app.miniMapCellHeight = 10
@@ -31,16 +44,16 @@ def keyPressed(app, event):
         app.view.moveBack()
 
     elif event.key == "d":
-        app.view.moveLeft()
-
-    elif event.key == "a":
-        app.view.moveRight()
-
-    elif event.key == "Right":
         app.view.lookLeft()
 
-    elif event.key == "Left":
+    elif event.key == "a":
         app.view.lookRight()
+    
+    elif event.key == "Up":
+        app.view.increaseCameraPitch()
+    
+    elif event.key == "Down":
+        app.view.decreaseCameraPitch()
 
     elif event.key == "m":
         app.miniMapState = not app.miniMapState
@@ -48,15 +61,14 @@ def keyPressed(app, event):
         pass
     app.lines = cast(app)
 
+    
+
 # def timerFired(app):
 #     app.lines = cast(app)
 
 #### END CONTROLLER ####
 
 #### VIEW ####
-def drawFLoor(app, canvas):
-    canvas.create_rectangle(0, app.height // 2, app.width, app.height, fill="black")
-
 def getMiniMapCellBounds(app, row, col) -> tuple:
     """
     Return the bounds of the cell in the minimap at the given row and column
@@ -77,7 +89,7 @@ def drawMiniMap(app, canvas):
             x0, y0, x1, y1 = getMiniMapCellBounds(app, row, col)
             temp = app.colors[app.view.map[row][col]] 
             if type(temp) == list:
-                color = temp[0]
+                color = temp[1]
             else:
                 color = temp
             canvas.create_rectangle(x0, y0, x1, y1, fill=color)
@@ -91,10 +103,38 @@ def drawMiniMap(app, canvas):
     #at the players position going in the direction of the plaers visionx
     canvas.create_line(x0, y0, x1, y1, fill="yellow")
     
-def drawSky(app, canvas):
-    canvas.create_rectangle(0, 0, app.width, app.height // 2, fill="Sky Blue")
+def drawCeiling(app, canvas):
+    #Draw a horizontal line one pixel wide from the top of the screen
+    #to halfway down the screen of each color in the ceiling texture
+    # repeat the texture for half the height of the screen
 
-import random
+    #Get the current player coords as idx
+    x = int(app.view.posX)
+    y = int(app.view.posY)
+
+    #Get the current player's ceiling texture
+    colors = app.colors[app.view.mapCeilings[x][y]]
+    for pixel in range(app.height // 2):    
+        cidx = pixel % len(colors)
+        color = colors[cidx]
+        canvas.create_line(0, pixel, app.width, pixel, fill=color)
+
+def drawFloor(app, canvas):
+    #Draw a horizontal line one pixel wide from the bottom of the screen
+    #to halfway up the screen of each color in the floor texture
+    # repeat the texture for half the height of the screen
+
+    #Get the current player coords as idx
+    x = int(app.view.posX)
+    y = int(app.view.posY)
+    #Get the current player's floor texture
+
+    colors = app.colors[app.view.mapFloors[x][y]]
+    for pixel in range(app.height // 2, app.height):    
+        cidx = pixel % len(colors)
+        color = colors[cidx]
+        canvas.create_line(0, pixel, app.width, pixel, fill=color)
+
 def drawLines(app, canvas):
     for line in app.lines:
         startX = line[0]
@@ -105,9 +145,8 @@ def drawLines(app, canvas):
         canvas.create_line(startX, startY, endX, endY, fill=color)
 
 def redrawAll(app, canvas):
-
-    drawFLoor(app, canvas)
-    drawSky(app, canvas)
+    drawFloor(app, canvas)
+    drawCeiling(app, canvas)
     drawLines(app, canvas)
     if app.miniMapState: #if the minimap is open
         drawMiniMap(app, canvas)

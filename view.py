@@ -4,6 +4,8 @@ import math
 class View:
     def __init__(self, 
             body, 
+            bodyCeilings,
+            bodyFloors,
             testBody=False) -> None:
         #Test map
         testMap = [ 
@@ -24,16 +26,17 @@ class View:
         self._width = 1024
         self._height = 768 
         self.map = body if not testBody else testMap
-        
+        self.mapFloors = bodyFloors
+        self.mapCeilings = bodyCeilings
         #player vars
         
         #These are constants
-        self._movSpeed = .25
-        self._rotSpeed = 0.05
+        self._movSpeed = .1
+        self._rotSpeed = 0.075
 
         #These are not
-        self.posX = 1.0
-        self.posY = 1.0
+        self.posX = 2.0
+        self.posY = 2.0
         self.dirX = 1.0
         self.dirY = 0.0
         self.absX = 0.0
@@ -65,6 +68,14 @@ class View:
         #rotate the player view to the right
         stepAngle = -self._rotSpeed
         self.rotate(stepAngle)
+    
+    def increaseCameraPitch(self):
+        #Increase the camera pitch
+        self.absY += self.regTurnY * self._movSpeed
+    def decreaseCameraPitch(self):
+        #Decrease the camera pitch
+        self.absY -= self.invTurnY * self._movSpeed
+
 
     def moveForward(self):
         #Move the player forward (NOT ROTATION)

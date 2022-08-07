@@ -1,31 +1,16 @@
 
-import math
-
+import math, random
+from combat_package.combat import *
 class View:
     def __init__(self, 
             body, 
             bodyCeilings,
-            bodyFloors,
-            testBody=False) -> None:
-        #Test map
-        testMap = [ 
-            [1,1,1,1,1,1,1,1,1,1,1,1],
-            [2,0,0,0,0,0,0,0,0,0,0,3],
-            [1,1,1,1,1,0,0,1,1,1,1,1],
-            [1,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,1],
-            [1,1,1,1,1,1,1,1,1,1,1,1]
-        ]
+            bodyFloors) -> None:
 
         #map vars
         self._width = 1024
         self._height = 768 
-        self.map = body if not testBody else testMap
+        self.map = body 
         self.mapFloors = bodyFloors
         self.mapCeilings = bodyCeilings
         #player vars
@@ -78,8 +63,7 @@ class View:
 
 
     def moveForward(self):
-        #Move the player forward (NOT ROTATION)
-        #TODO: make this prettier and more readable
+        #Move the player forward in the map
         if not self.map[int(self.posX + self.dirX * self._movSpeed)][int(self.posY)]:
             self.posX += self.dirX * self._movSpeed
         if not self.map[int(self.posX)][int(self.posY + self.dirY * self._movSpeed)]:
@@ -87,7 +71,6 @@ class View:
     
     def moveBack(self):
         #Move the player backward (NOT ROTATION)
-        #TODO: make this prettier and more readable
         if not self.map[int(self.posX - self.dirX * self._movSpeed)][int(self.posY)]:
             self.posX -= self.dirX * self._movSpeed
         if not self.map[int(self.posX)][int(self.posY - self.dirY * self._movSpeed)]:
@@ -106,3 +89,29 @@ class View:
             self.posX += self.dirX * self._movSpeed
         if not self.map[int(self.posX)][int(self.posY - self.dirY * self._movSpeed)]:
             self.posY -= self.dirY * self._movSpeed
+
+def randomEncounter(app, player, p=0.01) -> None:
+    """
+    Given a random chance of fighting an enemy, 
+    update the app state to reflect combat
+    """
+    if random.random() < p:
+        app.enemy = Enemy("string", 5, 50, 5)
+        app.isCombat = True
+        app.victory = False
+        
+    else:
+        pass
+
+def viewKeyPressed(app, event):
+    if event.key == "w":
+        app.view.moveForward()
+    elif event.key == "s":
+        app.view.moveBack()
+    elif event.key == "a":
+        app.view.lookRight()
+    elif event.key == "d":
+        app.view.lookLeft()
+    elif event.key == "m":
+        app.miniMapState = not app.miniMapState
+    randomEncounter(app, app.player)

@@ -14,6 +14,7 @@ class TexturePack:
             floor: list,
             ceiling: list,
             wallTextures: 'dict[list]',
+            horizontalWallTextures: 'dict[list]',
             hasDayNight: bool=False,
             dayCeiling: list=None,
             nightCeiling: list=None) -> None:
@@ -36,6 +37,7 @@ class TexturePack:
         # The integer keys will be the values of the 2d list for the map, 
         # Allowing the map to access these textures
         self.wallTextures = wallTextures
+        self.horizontalWallTextures = horizontalWallTextures
 
         # HasDayNight is a boolean that will be used to determine
         # if the ceiling has a day and night texture.
@@ -85,6 +87,18 @@ TEST1 = TexturePack(
         4: STONE_BRICK_GRADIENT,
         5: GRASS,
         7: WOOD_PLANK_2
+    },
+
+    #Horizontal lines to overlay the wall textures with
+    #This 
+    horizontalWallTextures={
+        0: ["Dark Green", "Dark Green"], #Complement for grass
+        1: ["White", "White"],
+        2: ["Black", "Black", "Black", "Black"],
+        3: ["Black", "Black", "Black", "Black"],
+        4: ["Black", "Black", "Black", "Black"],
+        5: ["Dark Green", "Dark Green", "Dark Green", "Dark Green"],
+        7: ["Black", "Black", "Black", "Black"]
     },
     hasDayNight=False
 )

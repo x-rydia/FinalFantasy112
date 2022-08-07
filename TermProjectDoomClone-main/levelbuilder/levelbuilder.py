@@ -2,6 +2,7 @@
 
 
 from cmu_112_graphics import *
+from goodAxolotlCastle import *
 
 def appStarted(app):
     app.nRows = 50
@@ -13,14 +14,14 @@ def appStarted(app):
     #define empty map
     app.mapWalls = [
         [0 for c in range(app.nCols)] for r in range(app.nRows)
-    ]
+    ] 
     app.mapFloors = [
         [5 for c in range(app.nCols)] for r in range(app.nRows)
     ]
     app.mapCeilings = [
         [1 for c in range(app.nCols)] for r in range(app.nRows)
     ]
-
+    app.mapWalls = AXOL_WALLS
     app.gridDict = {
         "Walls": app.mapWalls,
         "Floors": app.mapFloors,
@@ -36,9 +37,13 @@ def appStarted(app):
         3: "Gray",
         4: "Dark Gray",
         5: "Green",
-        6: "Dark Green"
-        7; "Sienna"
+        6: "Dark Green",
+        7: "Sienna",
+        8: "Dark Red",
+        9: "Red"
     }
+
+    
 
 def clickToGrid(app, x, y):
     #convert x,y to grid coords
@@ -92,7 +97,14 @@ def keyPressed(app, event):
         app.selectedTextureInt = 4
     elif event.key == "5":
         app.selectedTextureInt = 5
-    
+    elif event.key == "6":
+        app.selectedTextureInt = 6
+    elif event.key == "7":
+        app.selectedTextureInt = 7
+    elif event.key == "8":
+        app.selectedTextureInt = 8
+    elif event.key == "9":
+        app.selectedTextureInt = 9
     else:
         pass
 

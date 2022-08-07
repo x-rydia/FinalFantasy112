@@ -1,12 +1,16 @@
-from view import View
+
+from combat_package.combat_events import combatKeyPressed, combatTimerFired, victoryKeyPressed
+from view import View, viewKeyPressed
 from cast import cast
 from cmu_112_graphics import *
 from environments import *
 import math
 from textures import *
-
+from tkinter import PhotoImage
+from PIL import ImageTk
 from levels.towerlevel import *
-
+from combat_package.combat_view import *
+from combat_package.combat import *
 #There is an error in tkinter that causes a crash due
 #to recursion depth. IT likely has something to do withw
 #The number of lines on the screen.
@@ -18,10 +22,16 @@ import sys
 sys.setrecursionlimit(100000)
 
 
+
 ###### MODEL ######
 def appStarted(app):
-    app.view = View(WALLS, CEILING, FLOORS, False)
+    app.view = View(WALLS, CEILING, FLOORS)
+    app.player = Player(app.view, [], 25, 95, 3)
+    app.playerName = "PLAYER_NAME"
     app.lines = cast(app)
+    
+    app.enemy = Enemy("str", 10, 50, 3)
+    app.enemyimg = PhotoImage(file=f"images/daniel.png")
     
     #SET THE TEXTURE PACK
     app.tp = TEST1
@@ -29,42 +39,37 @@ def appStarted(app):
     app.floorTexture = app.tp.floor
     app.ceilingTexture = app.tp.ceiling
 
+    app.complements = app.tp.horizontalWallTextures
+
     app.miniMapState = False
     app.miniMapCellWidth = 10
     app.miniMapCellHeight = 10
+
+
+    #STATES 
+    app.isCombat = False
+    app.victory = False
+    app.victoryMessage = ""
+    app.player.gague = 10
+
 #### END MODEL ####
 
 ##### CONTROLLER #####
 def keyPressed(app, event):
-    #Move or rotate the player and then cast new rays
-    if event.key == "w":
-        app.view.moveForward()
-
-    elif event.key == "s":
-        app.view.moveBack()
-
-    elif event.key == "d":
-        app.view.lookLeft()
-
-    elif event.key == "a":
-        app.view.lookRight()
+    if app.isCombat:
+        combatKeyPressed(app, event)
     
-    elif event.key == "Up":
-        app.view.increaseCameraPitch()
-    
-    elif event.key == "Down":
-        app.view.decreaseCameraPitch()
+    elif app.victory:
+        victoryKeyPressed(app, event)
 
-    elif event.key == "m":
-        app.miniMapState = not app.miniMapState
-    else:
-        pass
-    app.lines = cast(app)
+    elif  not app.isCombat:
+        viewKeyPressed(app, event)
+        app.lines = cast(app)
 
     
 
-# def timerFired(app):
-#     app.lines = cast(app)
+def timerFired(app):
+    combatTimerFired(app)
 
 #### END CONTROLLER ####
 
@@ -137,19 +142,31 @@ def drawFloor(app, canvas):
 
 def drawLines(app, canvas):
     for line in app.lines:
+
+        #Vertical line from raycasting
         startX = line[0]
         startY = line[1]
         endX = line[2]
         endY = line[3]
         color = app.colors[line[4]][app.lines.index(line) % len(app.colors[line[4]])]
+
+        #Draw the Vertical texture
         canvas.create_line(startX, startY, endX, endY, fill=color)
+
+
 
 def redrawAll(app, canvas):
     drawFloor(app, canvas)
     drawCeiling(app, canvas)
     drawLines(app, canvas)
-    if app.miniMapState: #if the minimap is open
+
+    if app.miniMapState: 
         drawMiniMap(app, canvas)
+    if app.isCombat and not app.victory:
+        drawCombatHeadsUpDisplay(app, canvas, app.player, app.enemy)
+    if app.victory:
+        drawVictory(app, canvas, app.victoryMessage)
+
 #### END VIEW #######
 
 #main

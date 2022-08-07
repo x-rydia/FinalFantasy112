@@ -9,6 +9,10 @@ or some kind of stone.
 
 Adding some kind of horizontal lines will be fairly difficult 
 to do in a manner that does not have issues with the raycasting. 
+Drawing horizontal lines over the vertical textures and vice versa 
+is defintely possible, but I do not see a way to do it without either
+doubling the raycasting runtime or not raycasting and having very awkaward 
+and clunky textures.
 """
 
 WOOD_PLANK = [

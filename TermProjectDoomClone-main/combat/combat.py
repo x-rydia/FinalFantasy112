@@ -40,7 +40,7 @@ class Entity:
             raise(Exception("entity must be an instance of Entity"))
         if self.isDead(): return 
         #Calculate the damage done
-        damage = self.attack + random.randint(-self.attack // 4, self.attack // 4)
+        damage = self.attack + random.randint(0, self.attack // 4)
         miss = random.random()
         crit = random.random()
 
@@ -125,7 +125,6 @@ class Enemy(Entity):
         "Emperor King": "I am now EMPEROR of this land, and I am still named King >:)",
     }
     def __init__(self,
-            texture: str,
             attack: int,
             hitpoints: int,
             defense: int,

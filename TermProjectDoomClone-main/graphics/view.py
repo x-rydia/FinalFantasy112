@@ -1,6 +1,7 @@
 
 import math, random
-from combat_package.combat import *
+from combat.combat import *
+from PIL import ImageTk
 class View:
     def __init__(self, 
             body, 
@@ -96,7 +97,8 @@ def randomEncounter(app, player, p=0.01) -> None:
     update the app state to reflect combat
     """
     if random.random() < p:
-        app.enemy = Enemy("string", 5, 50, 5)
+        app.enemy = Enemy(10, 50, 5, 5)
+        app.enemyimg = ImageTk.PhotoImage(app.loadImage(f"./images/{app.enemy.name.lower()}.png"))
         app.isCombat = True
         app.victory = False
         

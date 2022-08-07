@@ -23,7 +23,6 @@ Running this file tests the combat view on a black screen.
 When actually run, this combat view will be displayed on 
 top of the main view.
 """
-from this import d
 from cmu_112_graphics import *
 
 class ComView:

@@ -6,7 +6,7 @@ any sprites or entities.
 Built in texture packs will be made as globals here
 """
 
-from textures import *
+from graphics.textures import *
 
 
 class TexturePack:

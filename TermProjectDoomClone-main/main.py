@@ -1,16 +1,16 @@
 
-from combat_package.combat_events import combatKeyPressed, combatTimerFired, victoryKeyPressed
-from view import View, viewKeyPressed
-from cast import cast
+from combat.combat_events import combatKeyPressed, combatTimerFired, victoryKeyPressed
+from graphics.view import View, randomEncounter, viewKeyPressed
+from graphics.cast import cast
 from cmu_112_graphics import *
-from environments import *
+from graphics.environments import *
 import math
-from textures import *
+from graphics.textures import *
 from tkinter import PhotoImage
 from PIL import ImageTk
 from levels.towerlevel import *
-from combat_package.combat_view import *
-from combat_package.combat import *
+from combat.combat_view import *
+from combat.combat import *
 #There is an error in tkinter that causes a crash due
 #to recursion depth. IT likely has something to do withw
 #The number of lines on the screen.
@@ -30,9 +30,12 @@ def appStarted(app):
     app.playerName = "PLAYER_NAME"
     app.lines = cast(app)
     
-    app.enemy = Enemy("str", 10, 50, 3)
-    app.enemyimg = PhotoImage(file=f"images/daniel.png")
-    
+    # app.enemy = Enemy("str", 10, 50, 3)
+    # try:
+    #     app.enemyimg = PhotoImage(file=f"images/{app.enemy.name}.png")
+    # except Exception as e:
+    #     print(e)
+    #     app.enemyimg = PhotoImage(file="images/orc.png")
     #SET THE TEXTURE PACK
     app.tp = TEST1
     app.colors = app.tp.wallTextures
@@ -56,6 +59,8 @@ def appStarted(app):
 
 ##### CONTROLLER #####
 def keyPressed(app, event):
+    if event.key == "p":
+        randomEncounter(app, app.player, p=1)
     if app.isCombat:
         combatKeyPressed(app, event)
     

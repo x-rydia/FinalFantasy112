@@ -6,7 +6,7 @@ If the app has state combat=True, then the functions in this module
 will be called in KeyPressed and mousePressed.
 """
 
-from combat_package.combat import Player, Enemy 
+from combat.combat import Player, Enemy 
 
 def combatKeyPressed(app, event):
     if app.enemy.isDead():

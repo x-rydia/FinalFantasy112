@@ -36,9 +36,11 @@ class View:
         self.invTurnY = math.sin(-self._rotSpeed)
     
     def rotate(self, theta):
-        #Rotate the player view
+        #Do a rotation matrix, but not in a matrix
         oldy = self.dirY
+        #x1 = x0 * cos(theta) - y0 * sin(theta)
         self.dirX = self.dirX * math.cos(theta) - oldy * math.sin(theta)
+        #y1 = x0 * sin(theta) + y0 * cos(theta)
         self.dirY = self.dirX * math.sin(theta) + oldy * math.cos(theta)
         #Rotate camera view
         oldAbsy = self.absY

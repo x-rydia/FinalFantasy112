@@ -5,6 +5,10 @@ def cast(app) -> list:
     """
     return the list of all the lines to be drawn as
     determined by raycasting 
+
+    https://lodev.org/cgtutor/raycasting.html
+    
+    https://en.wikipedia.org/wiki/Digital_differential_analyzer_(graphics_algorithm)
     """
     coordinates = []
     for i in range(app.view._width): 
@@ -14,12 +18,13 @@ def cast(app) -> list:
         rayDirX = app.view.dirX + app.view.absX * plrX + 0.00001
 
         #avoid zero division error with raydiry
-        #TODO: safe div function?
         rayDirY = app.view.dirY + app.view.absY * plrX + 0.00001 
 
-        #calculate the distance to the wall
+        #calculate slope of ray
         dx = math.sqrt(1 + rayDirY**2/rayDirX**2)
         dy = math.sqrt(1 + rayDirX**2/rayDirY**2)
+        
+        #Handle negative slopes
         if rayDirX < 0:
             stepX = -1
             sideDistX = (app.view.posX - mapX) * dx

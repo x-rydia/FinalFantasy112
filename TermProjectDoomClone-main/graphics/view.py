@@ -57,12 +57,12 @@ class View:
         stepAngle = -self._rotSpeed
         self.rotate(stepAngle)
     
-    def increaseCameraPitch(self):
-        #Increase the camera pitch
-        self.absY += self.regTurnY * self._movSpeed
-    def decreaseCameraPitch(self):
-        #Decrease the camera pitch
-        self.absY -= self.invTurnY * self._movSpeed
+    # def increaseCameraPitch(self):
+    #     #Increase the camera pitch
+    #     self.absY += self.regTurnY * self._movSpeed
+    # def decreaseCameraPitch(self):
+    #     #Decrease the camera pitch
+    #     self.absY -= self.invTurnY * self._movSpeed
 
 
     def moveForward(self):

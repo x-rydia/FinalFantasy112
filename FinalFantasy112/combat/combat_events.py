@@ -55,12 +55,7 @@ def combatKeyPressed(app, event):
         app.player.openInventory()
     
     elif event.key == "5":
-        app.enemy.hitPoints = 0
-        app.victory = True
-
-        app.victoryMessages = [
-            f"Congratulations, {app.playerName}! You have defeated {app.enemy.name}!", ""
-        ]
+        app.isCombat = False
     else:
         pass
     

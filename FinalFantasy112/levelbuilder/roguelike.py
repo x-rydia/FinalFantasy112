@@ -11,7 +11,7 @@ from copy import deepcopy
 class Room:
     def __init__(self, size: int,
             topLeftX: int, topLeftY: int,
-            textureValue: int=1) -> None:
+            textureValue: int=3) -> None:
 
         self.size = size
         self.topLeftX = topLeftX
@@ -123,7 +123,7 @@ class Level:
             rows: int,
             cols: int, 
             rooms: int,
-            tunnels: int,
+            holes: int=25,
             textureValue=1):
         self.rows = rows
         self.cols = cols
@@ -131,28 +131,16 @@ class Level:
         self.rooms = []
         self.tunnels = []
         allWalls = set()
-        tunWalls = set()
-        tunPaths = set()
 
         for r in range(rooms):
             room = createRoom(self.map)
             self.rooms.append(room)
             allWalls.update(room.walls)
-        
-        for r in range(tunnels):
-            tun = Tunnel(self, random.choice(self.rooms), self.map)
-            self.tunnels.append(tun)
-            tunWalls.update(tun.wallCells)
-            tunPaths.update(tun.pathCells)
-            
 
-        for x, y in allWalls:
-            self.map[y][x] = textureValue
-        for x, y in tunWalls:
-            self.map[y][x] = 0
-        for x, y in tunPaths:
-            self.map[y][x] = 0
-        
+
+
+
+
         #set all cells that are on an edge to be walls
         for x in range(len(self.map[0])):
             self.map[0][x] = textureValue
@@ -160,6 +148,17 @@ class Level:
         for y in range(len(self.map)):
             self.map[y][0] = textureValue
             self.map[y][-1] = textureValue
+        
+        for allWall in allWalls:
+            self.map[allWall[1]][allWall[0]] = textureValue
+
+        nHoles = (holes * len(self.rooms)) // 100
+
+        for r in range(nHoles):
+            allList = list(allWalls)
+            wall = random.choice(allList)
+            self.map[wall[1]][wall[0]] = 0
+        
 
         
     def __str__(self) -> str:
@@ -172,55 +171,4 @@ class Level:
         return None
 
 
-
-class Tunnel:
-    """
-    Tunnel between two rooms. takes two tunnel cells and a map
-    """
-    def __init__(self, 
-            level: Level,    
-            start: Room, 
-            map: list,
-            textureValue: int=1
-        ) -> None:
-
-        self.start = start
-        self.map = map
-        self.textureValue = textureValue
-
-        self.pathCells = set()
-        self.wallCells = set()
-
-        #https://gamedev.stackexchange.com/questions/50570/creating-and-connecting-rooms-for-a-roguelike
-        #Got some inspo from this thread, didnt use any given algorithm, took elements but not 
-        #an entire algo. 
-        
-        x0, y0 = random.choice(list(start.walls))
-        dir = start.getDirByCell(x0, y0)
-        
-
-        found = False
-        while not found:
-            x1, y1 = x0 + dir[0], y0 + dir[1]
-            if level.getRoomByCoord(x1, y1) is not None:
-                found = True
-                self.pathCells.add((x1, y1))
-                break
-            else:
-                self.pathCells.add((x1, y1))
-                x0, y0 = x1, y1
-        
-        #Take the path cells and add the walls to the wallCells set
-        for x, y in self.pathCells:
-            self.wallCells.add((x, y))
-            self.wallCells.add((x+1, y))
-            self.wallCells.add((x, y+1))
-            self.wallCells.add((x+1, y+1))
-        
-        #Remove the path cells from the wallCells set
-        for x, y in self.pathCells:
-            self.wallCells.remove((x, y))
-
-        #remove all cells out of bounds
-        self.wallCells = {(x, y) for x, y in self.wallCells if x >= 0 and y >= 0 and x < len(self.map[0]) and y < len(self.map)}
-        
+   

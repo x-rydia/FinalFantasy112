@@ -121,8 +121,25 @@ SKY = [
 
 #Redder with more iterations
 WOOD_PLANK_2 = [
+    "black",
     "tan4",
-    "tan4"
+    "sienna4",
+    "sienna3",
+    "chocolate3",
+    "DarkOrange4",
+    "tan4",
+    "sienna4",
+    "sienna3",
+    "chocolate3",
+    "DarkOrange4",
+    "tan4",
+    "sienna4",
+    "sienna3",
+    "chocolate3",
+    "DarkOrange4",
+    "tan4",
+    "sienna4",
+    "black"
 ]
 
 

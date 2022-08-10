@@ -26,7 +26,7 @@ from levelbuilder.roguelike import *
 
 ###### MODEL ######
 def appStarted(app):
-    app.level = Level(25, 25, 10, 10, 3)
+    app.level = Level(25, 25, 10, 100, 3)
     app.level.ceilings = [[7 for col in range(app.level.cols)] for row in range(app.level.rows)]
     app.level.floors = [[2 for col in range(app.level.cols)] for row in range(app.level.rows)]
     app.view = View(app.level.map, app.level.ceilings, app.level.floors)
@@ -45,12 +45,13 @@ def appStarted(app):
     app.colors = app.tp.wallTextures
     app.floorTexture = app.tp.floor
     app.ceilingTexture = app.tp.ceiling
+    app.tex = PhotoImage(app.loadImage("images/lines.png"))
 
     app.complements = app.tp.horizontalWallTextures
 
     app.miniMapState = False
-    app.miniMapCellWidth = 10
-    app.miniMapCellHeight = 10
+    app.miniMapCellWidth = app.height // app.level.rows
+    app.miniMapCellHeight = app.height // app.level.cols
 
 
     #STATES 
@@ -87,10 +88,11 @@ def getMiniMapCellBounds(app, row, col) -> tuple:
     """
     Return the bounds of the cell in the minimap at the given row and column
     """
+    shift = app.width // 8
     return (
-        col * app.miniMapCellWidth,
+        shift + col * app.miniMapCellWidth,
         row * app.miniMapCellHeight,
-        (col + 1) * app.miniMapCellWidth,
+        shift + (col + 1) * app.miniMapCellWidth,
         (row + 1) * app.miniMapCellHeight
     )
 
@@ -101,7 +103,7 @@ def drawMiniMap(app, canvas):
     for row in range(len(app.view.map)):
         for col in range(len(app.view.map[row])):
             x0, y0, x1, y1 = getMiniMapCellBounds(app, row, col)
-            temp = app.colors[app.view.map[row][col]] 
+            temp = app.colors[app.view.map[row][col]] if app.view.map[row][col] != 0 else app.colors[2]
             if type(temp) == list:
                 color = temp[1]
             else:
@@ -113,9 +115,6 @@ def drawMiniMap(app, canvas):
             int(app.view.posX), int(app.view.posY))
     canvas.create_oval(x0, y0, x1, y1, fill="yellow")
 
-    #Draw the player's view in the minimap as a line starting
-    #at the players position going in the direction of the plaers visionx
-    canvas.create_line(x0, y0, x1, y1, fill="yellow")
     
 def drawCeiling(app, canvas):
     #Draw a horizontal line one pixel wide from the top of the screen
@@ -149,7 +148,16 @@ def drawFloor(app, canvas):
         color = colors[cidx]
         canvas.create_line(0, pixel, app.width, pixel, fill=color)
 
-def drawLines(app, canvas):
+def drawLines(app, canvas, image=False):
+    if image:
+        for i in range(len(app.lines)):
+            texX0 = i % (app.tex.width() + 1) 
+            texX1 = (i + 1) % (app.tex.width() + 1)
+            texY0 = 0
+            texY1 = app.tex.height()
+            lineImage = app.tex.crop((texX0, texY0, texX1, texY1))
+            canvas.create_image(app.lines[i][0], app.lines[i][1], image=lineImage)
+        return 
     for line in app.lines:
 
         #Vertical line from raycasting
@@ -167,7 +175,7 @@ def drawLines(app, canvas):
 def redrawAll(app, canvas):
     drawFloor(app, canvas)
     drawCeiling(app, canvas)
-    drawLines(app, canvas)
+    drawLines(app, canvas, image=True)
 
     if app.miniMapState: 
         drawMiniMap(app, canvas)

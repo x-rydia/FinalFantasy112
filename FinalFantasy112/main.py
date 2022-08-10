@@ -1,7 +1,7 @@
 
 from combat.combat_events import combatKeyPressed, combatTimerFired, victoryKeyPressed
 from graphics.view import View, randomEncounter, viewKeyPressed
-from graphics.cast import cast
+from graphics.cast import cast, getImageLines
 from cmu_112_graphics import *
 from graphics.environments import *
 import math
@@ -22,30 +22,25 @@ import sys
 sys.setrecursionlimit(100000)
 
 from levelbuilder.roguelike import *
+from draw import *
 
 
 ###### MODEL ######
 def appStarted(app):
     app.level = Level(25, 25, 10, 100, 3)
-    app.level.ceilings = [[7 for col in range(app.level.cols)] for row in range(app.level.rows)]
-    app.level.floors = [[2 for col in range(app.level.cols)] for row in range(app.level.rows)]
-    app.view = View(app.level.map, app.level.ceilings, app.level.floors)
+
+    app.view = View(app.level.map)
     app.player = Player(app.view, [], 25, 95, 3)
     app.playerName = "PLAYER_NAME"
     app.lines = cast(app)
-    
-    # app.enemy = Enemy("str", 10, 50, 3)
-    # try:
-    #     app.enemyimg = PhotoImage(file=f"images/{app.enemy.name}.png")
-    # except Exception as e:
-    #     print(e)
-    #     app.enemyimg = PhotoImage(file="images/orc.png")
-    #SET THE TEXTURE PACK
+
     app.tp = TEST1
     app.colors = app.tp.wallTextures
     app.floorTexture = app.tp.floor
     app.ceilingTexture = app.tp.ceiling
-    app.tex = PhotoImage(app.loadImage("images/lines.png"))
+    app.floorImg = ImageTk.PhotoImage(app.loadImage("images/floorimg.png"))
+
+    
 
     app.complements = app.tp.horizontalWallTextures
 
@@ -76,104 +71,11 @@ def keyPressed(app, event):
         viewKeyPressed(app, event)
         app.lines = cast(app)
 
-    
-
 def timerFired(app):
     combatTimerFired(app)
 
-#### END CONTROLLER ####
-
-#### VIEW ####
-def getMiniMapCellBounds(app, row, col) -> tuple:
-    """
-    Return the bounds of the cell in the minimap at the given row and column
-    """
-    shift = app.width // 8
-    return (
-        shift + col * app.miniMapCellWidth,
-        row * app.miniMapCellHeight,
-        shift + (col + 1) * app.miniMapCellWidth,
-        (row + 1) * app.miniMapCellHeight
-    )
-
-def drawMiniMap(app, canvas):
-    """
-    Portray the environment in a grid minimap in the upper left corner
-    """
-    for row in range(len(app.view.map)):
-        for col in range(len(app.view.map[row])):
-            x0, y0, x1, y1 = getMiniMapCellBounds(app, row, col)
-            temp = app.colors[app.view.map[row][col]] if app.view.map[row][col] != 0 else app.colors[2]
-            if type(temp) == list:
-                color = temp[1]
-            else:
-                color = temp
-            canvas.create_rectangle(x0, y0, x1, y1, fill=color)
-
-    #Draw the player position in the minimap
-    x0, y0, x1, y1 = getMiniMapCellBounds(app, 
-            int(app.view.posX), int(app.view.posY))
-    canvas.create_oval(x0, y0, x1, y1, fill="yellow")
-
-    
-def drawCeiling(app, canvas):
-    #Draw a horizontal line one pixel wide from the top of the screen
-    #to halfway down the screen of each color in the ceiling texture
-    # repeat the texture for half the height of the screen
-
-    #Get the current player coords as idx
-    x = int(app.view.posX)
-    y = int(app.view.posY)
-
-    #Get the current player's ceiling texture
-    colors = app.colors[app.view.mapCeilings[x][y]]
-    for pixel in range(app.height // 2):    
-        cidx = pixel % len(colors)
-        color = colors[cidx]
-        canvas.create_line(0, pixel, app.width, pixel, fill=color)
-
-def drawFloor(app, canvas):
-    #Draw a horizontal line one pixel wide from the bottom of the screen
-    #to halfway up the screen of each color in the floor texture
-    # repeat the texture for half the height of the screen
-
-    #Get the current player coords as idx
-    x = int(app.view.posX)
-    y = int(app.view.posY)
-    #Get the current player's floor texture
-
-    colors = app.colors[app.view.mapFloors[x][y]]
-    for pixel in range(app.height // 2, app.height):    
-        cidx = pixel % len(colors)
-        color = colors[cidx]
-        canvas.create_line(0, pixel, app.width, pixel, fill=color)
-
-def drawLines(app, canvas, image=False):
-    if image:
-        for i in range(len(app.lines)):
-            texX0 = i % (app.tex.width() + 1) 
-            texX1 = (i + 1) % (app.tex.width() + 1)
-            texY0 = 0
-            texY1 = app.tex.height()
-            lineImage = app.tex.crop((texX0, texY0, texX1, texY1))
-            canvas.create_image(app.lines[i][0], app.lines[i][1], image=lineImage)
-        return 
-    for line in app.lines:
-
-        #Vertical line from raycasting
-        startX = line[0]
-        startY = line[1]
-        endX = line[2]
-        endY = line[3]
-        color = app.colors[line[4]][app.lines.index(line) % len(app.colors[line[4]])]
-
-        #Draw the Vertical texture
-        canvas.create_line(startX, startY, endX, endY, fill=color)
-
-
-
 def redrawAll(app, canvas):
-    drawFloor(app, canvas)
+    drawFloor(app, canvas, img=True)
     drawCeiling(app, canvas)
     drawLines(app, canvas, image=True)
 

@@ -2,18 +2,15 @@
 import math, random
 from combat.combat import *
 from PIL import ImageTk
+
+from levelbuilder.roguelike import *
 class View:
-    def __init__(self, 
-            body, 
-            bodyCeilings,
-            bodyFloors) -> None:
+    def __init__(self, body) -> None:
 
         #map vars
         self._width = 1024
         self._height = 768 
         self.map = body 
-        self.mapFloors = bodyFloors
-        self.mapCeilings = bodyCeilings
         #player vars
         
         #These are constants
@@ -118,4 +115,6 @@ def viewKeyPressed(app, event):
         app.view.lookLeft()
     elif event.key == "m":
         app.miniMapState = not app.miniMapState
+    elif event.key == "n":
+        app.level = Level(app.level.rows, app.level.cols, 5)
     randomEncounter(app, app.player)

@@ -1,5 +1,5 @@
 import math
-
+from PIL import ImageTk
 
 def cast(app) -> list:
     """
@@ -75,3 +75,21 @@ def cast(app) -> list:
         coordinates.append((i, drawStart, i, drawEnd, app.view.map[mapX][mapY]))
     print(f"CAST CALLED @: {app.view.posX}, {app.view.posY}")
     return coordinates
+
+def getImageLines(app):
+    lines = cast(app)
+    tex = app.tex
+    imageLines = []
+    for line in lines:
+        x0 = line[0] % tex.width
+        y0 = line[1] % tex.height
+        x1 = line[2] % tex.width
+        y1 = tex.height
+        img = tex.crop(
+            (x0, y0, x1, y1)
+        )
+        imageLines.append(
+            (line[0], line[1], ImageTk.PhotoImage(img))
+        )   
+    return imageLines
+

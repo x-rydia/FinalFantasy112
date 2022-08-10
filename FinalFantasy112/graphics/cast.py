@@ -42,6 +42,7 @@ def cast(app) -> list:
         contact = False
         while not contact:
             if sideDistX < sideDistY:
+                mapX += stepX
                 sideDistX += dx
                 side = 0
 

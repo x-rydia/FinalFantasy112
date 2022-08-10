@@ -14,7 +14,7 @@ class View:
         self.map = body 
         self.mapFloors = bodyFloors
         self.mapCeilings = bodyCeilings
-        #player vars/courses/15112-n22/course_user_data/304843/gradebook
+        #player vars
         
         #These are constants
         self._movSpeed = .1

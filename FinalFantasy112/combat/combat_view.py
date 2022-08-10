@@ -336,6 +336,11 @@ def drawCombatGague(app, canvas, player):
         fill="Sky Blue"
     )
 
+def drawGameOver(app, canvas, player):
+    if not player.isDead(): return None
+
+    drawVictory(app, canvas, "You have been defeated [Press Space to Respawn]")
+
 def drawCombatHeadsUpDisplay(app, canvas, player, enemy):
     # drawFullBackground(app, canvas)
     drawEnemyName(app, canvas, enemy)

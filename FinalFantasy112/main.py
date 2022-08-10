@@ -21,11 +21,15 @@ from combat.combat import *
 import sys 
 sys.setrecursionlimit(100000)
 
+from levelbuilder.roguelike import *
 
 
 ###### MODEL ######
 def appStarted(app):
-    app.view = View(WALLS, CEILING, FLOORS)
+    app.level = Level(25, 25, 10, 10, 3)
+    app.level.ceilings = [[7 for col in range(app.level.cols)] for row in range(app.level.rows)]
+    app.level.floors = [[2 for col in range(app.level.cols)] for row in range(app.level.rows)]
+    app.view = View(app.level.map, app.level.ceilings, app.level.floors)
     app.player = Player(app.view, [], 25, 95, 3)
     app.playerName = "PLAYER_NAME"
     app.lines = cast(app)

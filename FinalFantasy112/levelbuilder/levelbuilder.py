@@ -3,7 +3,7 @@
 
 from cmu_112_graphics import *
 from goodAxolotlCastle import *
-
+from roguelike import Level
 def appStarted(app):
     app.nRows = 50
     app.nCols = 50
@@ -21,7 +21,7 @@ def appStarted(app):
     app.mapCeilings = [
         [1 for c in range(app.nCols)] for r in range(app.nRows)
     ]
-    app.mapWalls = AXOL_WALLS
+    app.mapWalls = Level(10, 10, 1, 1).map
     app.gridDict = {
         "Walls": app.mapWalls,
         "Floors": app.mapFloors,
@@ -79,6 +79,8 @@ def keyPressed(app, event):
         print()
         for row in app.gridDict[app.currentGrid]:
             print(row, end=",\n")
+    if event.key == "n":
+        app.mapWalls = Level(50, 50, 60, 30).map
     if event.key == "w":
         app.currentGrid = "Walls"
     elif event.key == "f":

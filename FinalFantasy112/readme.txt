@@ -96,13 +96,40 @@ ALGORITHMIC PLANS:
         data. 
          
 
+TP2 CHANGES
 
+Terrain generation is modified from the original rogeulike plan to no longer include
+tunnels between rooms.
 
+Terrain generation is done in a smaller map
 
+minimap is better looking
 
+more efficient floor (no lines)
 
+using an image for the floor to see how it looks, I was right, images are lowkey 
+kinda dog water and cannot be used here. Honestly it was a bad idea and a waste 
+of my time today, but its good to know they simply do not work. 
 
+Feel free to set image=False in redraw all to speed things Up
 
+cleaned up code here and there
+
+terrain generation is pretty cool, feel free to check it out its in levelbuilder
+
+I hate photoshop I hate photoshop i hate photoshop I want to  pound my head through the screen
+(had to use it to try and make a 45 degree backward tilt cobblestone texture image for the floor
+so it looks raycasted without being raycasted--slow and did not work)
+
+Really the big thing here progress wise is better map generaion and some slight UI improvements
+no major animations or graphical changes yet. 
+
+Im pretty happy with the terrain gen but I will need an algorithm ot verify playability
+should be easy work tonight 
+
+Anyway, I hope you aren't going as insane as I am, 
+enjoy your evening, dont stay up too late, drink water, etc,
+-Robbie 
 
     
 

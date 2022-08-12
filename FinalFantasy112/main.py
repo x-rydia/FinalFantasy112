@@ -1,16 +1,14 @@
 
 from combat.combat_events import combatKeyPressed, combatTimerFired, victoryKeyPressed
 from graphics.view import View, randomEncounter, viewKeyPressed
-from graphics.cast import cast, getImageLines
+from graphics.cast import cast
 from cmu_112_graphics import *
 from graphics.environments import *
-import math
 from graphics.textures import *
-from tkinter import PhotoImage
 from PIL import ImageTk
-
 from combat.combat_view import *
 from combat.combat import *
+
 #There is an error in tkinter that causes a crash due
 #to recursion depth. IT likely has something to do withw
 #The number of lines on the screen.
@@ -21,7 +19,7 @@ from combat.combat import *
 import sys 
 sys.setrecursionlimit(100000)
 
-from levelbuilder.roguelike import *
+from roguelike import *
 from draw import *
 
 
@@ -43,7 +41,7 @@ def appStarted(app, title=True):
     app.colors = app.tp.wallTextures
     app.floorTexture = app.tp.floor
     app.ceilingTexture = app.tp.ceiling
-    app.floorImg = ImageTk.PhotoImage(app.loadImage("images/floorimg.png"))
+
 
     if title: app.title = True 
 
@@ -88,7 +86,9 @@ def keyPressed(app, event):
     if app.title: 
         titleKeyPressed(app, event) 
     elif event.key == "g":
-        app.gameOver = True
+        app.player.hitpoints = 1
+    elif event.key == 'h':
+        app.player.gague = app.player.gagueMax
     elif app.newLevel: 
         app.newLevel = False
         partialRestart(app)

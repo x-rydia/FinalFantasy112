@@ -1,7 +1,6 @@
 """
-Environment class will contain the geography of the 
-level, the floor texture, the ceiling texture, and 
-any sprites or entities.
+TexturePack class to allow for organization of textures. Theres some
+dead code in here that isnt used in the app im turning in, feel free to ignore. 
 
 Built in texture packs will be made as globals here
 """

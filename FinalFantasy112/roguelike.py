@@ -5,7 +5,7 @@ Rogue-like terrain generation algorithm which will create a
 import random
 import math
 
-from levelbuilder.utils import unaliased2dList, print2d, surroundingCells
+from utils import unaliased2dList, print2d, surroundingCells
 from copy import deepcopy
 
 class Room:

@@ -3,7 +3,7 @@ import math, random
 from combat.combat import *
 from PIL import ImageTk
 from cmu_112_graphics import *
-from levelbuilder.roguelike import *
+from roguelike import *
 class View:
     def __init__(self, body, x, y, app) -> None:
         self.app = app

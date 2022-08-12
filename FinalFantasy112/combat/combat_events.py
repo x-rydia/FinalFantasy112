@@ -52,6 +52,8 @@ def combatKeyPressed(app, event):
             if app.player.flee():
                 app.isCombat = False
                 return 
+            else:
+                app.enemy.dialogue = "You tried to flee but failed!"
             
             app.enemy.attackEntity(app.player)
             if app.player.isDead():

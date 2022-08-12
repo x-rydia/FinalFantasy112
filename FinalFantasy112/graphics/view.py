@@ -2,10 +2,11 @@
 import math, random
 from combat.combat import *
 from PIL import ImageTk
-
+from cmu_112_graphics import *
 from levelbuilder.roguelike import *
 class View:
-    def __init__(self, body) -> None:
+    def __init__(self, body, x, y, app) -> None:
+        self.app = app
 
         #map vars
         self._width = 1024
@@ -18,8 +19,8 @@ class View:
         self._rotSpeed = 0.075
 
         #These are not
-        self.posX = 2.0
-        self.posY = 2.0
+        self.posX = x
+        self.posY = y
         self.dirX = 1.0
         self.dirY = 0.0
         self.absX = 0.0
@@ -64,18 +65,29 @@ class View:
 
     def moveForward(self):
         #Move the player forward in the map
-        if not self.map[int(self.posX + self.dirX * self._movSpeed)][int(self.posY)]:
+        mapX = int(self.posX + self.dirX * self._movSpeed)
+        mapY = int(self.posY + self.dirY * self._movSpeed)
+        if self.map[mapX][mapY] == 0:
             self.posX += self.dirX * self._movSpeed
-        if not self.map[int(self.posX)][int(self.posY + self.dirY * self._movSpeed)]:
             self.posY += self.dirY * self._movSpeed
+        if self.map[mapX][mapY] == 5:
+            self.app.newLevel = True
+            self.app.score += 1
     
     def moveBack(self):
         #Move the player backward (NOT ROTATION)
-        if not self.map[int(self.posX - self.dirX * self._movSpeed)][int(self.posY)]:
+        mapX = int(self.posX - self.dirX * self._movSpeed)
+        mapY = int(self.posY - self.dirY * self._movSpeed)
+        if self.map[mapX][mapY] == 0:
             self.posX -= self.dirX * self._movSpeed
-        if not self.map[int(self.posX)][int(self.posY - self.dirY * self._movSpeed)]:
+        if self.map[mapX][mapY] == 0:
             self.posY -= self.dirY * self._movSpeed
-    
+        
+        if self.map[mapX][mapY] == 5:
+            self.app.newLevel = True
+            self.app.score += 1 
+            
+
     def moveLeft(self): 
         #Move the player left (NOT ROTATION)
         if not self.map[int(self.posX - self.dirX * self._movSpeed)][int(self.posY)]:
@@ -87,10 +99,11 @@ class View:
         #Move the player right (NOT ROTATION)
         if not self.map[int(self.posX + self.dirX * self._movSpeed)][int(self.posY)]:
             self.posX += self.dirX * self._movSpeed
+
         if not self.map[int(self.posX)][int(self.posY - self.dirY * self._movSpeed)]:
             self.posY -= self.dirY * self._movSpeed
 
-def randomEncounter(app, player, p=0.01) -> None:
+def randomEncounter(app, player, p=0.005) -> None:
     """
     Given a random chance of fighting an enemy, 
     update the app state to reflect combat
@@ -107,6 +120,7 @@ def randomEncounter(app, player, p=0.01) -> None:
 def viewKeyPressed(app, event):
     if event.key == "w":
         app.view.moveForward()
+        randomEncounter(app, app.player)
     elif event.key == "s":
         app.view.moveBack()
     elif event.key == "a":
@@ -116,5 +130,4 @@ def viewKeyPressed(app, event):
     elif event.key == "m":
         app.miniMapState = not app.miniMapState
     elif event.key == "n":
-        app.level = Level(app.level.rows, app.level.cols, 5)
-    randomEncounter(app, app.player)
+        app.newLevel = True

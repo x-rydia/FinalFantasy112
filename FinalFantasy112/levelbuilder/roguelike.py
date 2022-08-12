@@ -112,9 +112,10 @@ def createRoom(map: list):
         room = Room(size, topLeftX, topLeftY)
         if all(map[y][x] == 0 for x,y in room.walls):
             done = True
+            room.walls = set(list(room.walls)[2:])
             for x,y in room.walls:
                 map[y][x] = room.textureValue
-    room.walls.pop()
+        
     return room
 
 
@@ -130,17 +131,24 @@ class Level:
         self.map = unaliased2dList(rows, cols)
         self.rooms = []
         self.tunnels = []
-        allWalls = set()
+        self.allWalls = set()
+        self.textureValue = textureValue
 
         for r in range(rooms):
             room = createRoom(self.map)
             self.rooms.append(room)
-            allWalls.update(room.walls)
+            self.allWalls.update(room.walls)
 
+        
+        for allWall in self.allWalls:
+            self.map[allWall[1]][allWall[0]] = textureValue
 
+        nHoles = (holes * len(self.rooms)) // 100
 
-
-
+        for r in range(nHoles):
+            allList = list(self.allWalls)
+            wall = random.choice(allList)
+            self.map[wall[1]][wall[0]] = 0
         #set all cells that are on an edge to be walls
         for x in range(len(self.map[0])):
             self.map[0][x] = textureValue
@@ -149,15 +157,49 @@ class Level:
             self.map[y][0] = textureValue
             self.map[y][-1] = textureValue
         
-        for allWall in allWalls:
-            self.map[allWall[1]][allWall[0]] = textureValue
+    def spawnPlayer(self):
+        """return a point that is not inside any wall"""
+        while True:
+            x = random.randint(1, self.cols-2)
+            y = random.randint(1, self.rows-2)
+            if self.map[y][x] == 0 and self.map[y+1][x] == 0 and self.map[y-1][x] == 0 \
+                    and self.map[y][x+1] == 0 and self.map[y][x-1] == 0:
+                self.plrX, self.plrY = x, y
+                return (x, y)
+        
 
-        nHoles = (holes * len(self.rooms)) // 100
+    def placeDoor(self):
+        """
+        get the set of all walls that can be walked to and make one of them a door
+        """
+        x = self.plrX
+        y = self.plrY
+        walkable = set()
+        walkable.add((x, y))
+        done = False
+        dirs = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        while not done:
+            newWalkable = set()
+            for dir in dirs:
+                x2 = x + dir[0]
+                y2 = y + dir[1]
+                if self.map[y2][x2] == self.textureValue:
+                    newWalkable.add((x2, y2))
+            if len(newWalkable) > 0:
+                walkable.update(newWalkable)
+            else:
+                done = True
+        print("walkable: ", walkable)
+        x, y = random.choice(list(walkable))
+        print("x, y: ", x, y)
+        self.map[y][x] = 5
 
-        for r in range(nHoles):
-            allList = list(allWalls)
-            wall = random.choice(allList)
-            self.map[wall[1]][wall[0]] = 0
+
+
+        
+
+
+
         
 
         

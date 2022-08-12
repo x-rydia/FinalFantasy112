@@ -90,6 +90,9 @@ class Player(Entity):
         self.gague = 0  
         self.gagueMax = 58
         self.dG = 2
+
+        self.exp = 0
+        self.nextLevel = 100
     
     def gagueUp(self):
         """Increase the combat gague"""
@@ -110,13 +113,19 @@ class Player(Entity):
         """Returns True if the player flees"""
         return random.random() < 0.2
     
+    def levelUp(self):
+        """Level up the player"""
+        if self.exp >= self.nextLevel:
+            self.attack *= 1.1
+            self.hitpoints = self.maxHitpoints
+            self.defense *= 1.1
+            self.dG += 1
+            self.nextLevel *= 1.1
+            self.exp = 0
+    
 
 class Enemy(Entity):
     namesAndDialogues = {
-        "GOBLIN": "Goblin: Gobble on Deez Nuts!",
-        "SKElETON": "Skeleton: Mr Skelly Bones, *Doot Doot* Mr Skelly Bones *Doot Doot*",
-        "ORC": "Orc: I am not an orc, I am an Uruk of Isengard",
-        "TROLL": "Troll: So much for my riddles three... :(",
         "DANIEL": "Daniel: *Daniel Noises*",
     }
     specialNamesAndDialogues = {
@@ -130,6 +139,7 @@ class Enemy(Entity):
             defense: int,
             specialName: str="") -> None:
         super(Enemy, self).__init__(attack, hitpoints, defense)
+        self.exp = 25
 
         self.name = random.choice(list(Enemy.namesAndDialogues.keys()))
         self.dialogue = Enemy.namesAndDialogues[self.name]

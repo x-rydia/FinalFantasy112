@@ -29,12 +29,12 @@ def combatKeyPressed(app, event):
             app.player.resetGague()
             if app.enemy.isDead():
                 app.victory = True
+                app.player.exp += app.enemy.exp
+                app.player.levelUp()
                 app.victoryMessages = [
                     f"Congratulations, {app.playerName}! You have defeated {app.enemy.name}!",
-                    f"This is another message from {app.enemy.name}",
-                    f"This is a third message from {app.enemy.name}",
-                    f"This is a fourth message from {app.enemy.name}"
-
+                    f"You gained {app.enemy.exp} experience points!",
+                    f"And are {app.player.nextLevel - app.player.exp} exp from leveling up!"
                 ]
                 app.isCombat = False
                 return 
@@ -52,7 +52,7 @@ def combatKeyPressed(app, event):
                 
     
     elif event.key == "4":
-        app.player.openInventory()
+        pass
     
     elif event.key == "5":
         app.isCombat = False

@@ -184,7 +184,7 @@ def drawOtherActionBar(app, canvas, turn):
     canvas.create_text(
         (ComView.actionBarx2 + ComView.actionBarx3) // 2,
         ((ComView.actionBary2 + ComView.actionBary3) // 2) + ComView.distBetweenActions // 2,
-        text="4: ITEMS", 
+        text="4: CRY", 
         fill=color, 
         font=ComView.combatFont
     )

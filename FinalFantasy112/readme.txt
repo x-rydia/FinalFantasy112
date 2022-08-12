@@ -132,5 +132,11 @@ enjoy your evening, dont stay up too late, drink water, etc,
 -Robbie 
 
     
-
+TP3 CHANGES
+- no longer role playing game, now jjust a dungeon crawler
+- terrain generaion is ixed and is always solvable  
+- difficulty of combat scaeles with the map
+- player leveling system added 
+- main view HUD added with player stats
+- player heals by leveling up
 

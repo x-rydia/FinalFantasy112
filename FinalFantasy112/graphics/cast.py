@@ -50,6 +50,9 @@ def cast(app) -> list:
                 sideDistY += dy
                 mapY += stepY
                 side = 1
+            if mapX < 0 or mapX >= len(app.view.map) or mapY < 0 or mapY >= len(app.view.map[0]):
+                contact = True
+                break
             if app.view.map[mapX][mapY] != 0:
                 contact = True
 

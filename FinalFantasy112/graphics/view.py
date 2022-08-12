@@ -64,12 +64,13 @@ class View:
 
 
     def moveForward(self):
-        #Move the player forward in the map
+        #Move the player forward (NOT ROTATION)
         mapX = int(self.posX + self.dirX * self._movSpeed)
         mapY = int(self.posY + self.dirY * self._movSpeed)
         if self.map[mapX][mapY] == 0:
             self.posX += self.dirX * self._movSpeed
             self.posY += self.dirY * self._movSpeed
+
         if self.map[mapX][mapY] == 5:
             self.app.newLevel = True
             self.app.score += 1
@@ -80,7 +81,6 @@ class View:
         mapY = int(self.posY - self.dirY * self._movSpeed)
         if self.map[mapX][mapY] == 0:
             self.posX -= self.dirX * self._movSpeed
-        if self.map[mapX][mapY] == 0:
             self.posY -= self.dirY * self._movSpeed
         
         if self.map[mapX][mapY] == 5:
@@ -109,7 +109,11 @@ def randomEncounter(app, player, p=0.005) -> None:
     update the app state to reflect combat
     """
     if random.random() < p:
-        app.enemy = Enemy(10, 50, 5, 5)
+        app.enemy = Enemy(
+            attack=10 + app.score,
+            hitpoints=50 + 5*app.score,
+            defense=0 
+        )
         app.enemyimg = ImageTk.PhotoImage(app.loadImage(f"./images/{app.enemy.name.lower()}.png"))
         app.isCombat = True
         app.victory = False

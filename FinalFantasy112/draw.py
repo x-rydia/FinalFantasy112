@@ -62,6 +62,9 @@ def titleRedrawAll(app, canvas, ):
     canvas.create_rectangle(0, 0, app.width, app.height, fill="black")
     canvas.create_text(app.width // 2, app.height // 4, text="The Backrooms of 112", fill="white", font="Arial 30")
 
+    #Draw the current player name on the title screen
+    canvas.create_text(app.width // 2, app.height // 2 - app.height // 6, 
+        text="Type Player Name: " + app.playerName, fill="white", font="Arial 20")
     #docs button
     canvas.create_rectangle(
         app.width // 2 - app.width // 4, 
@@ -99,25 +102,6 @@ def titleRedrawAll(app, canvas, ):
         anchor= "c"
     )
 
-    # read docs button
-    canvas.create_rectangle(
-        app.width // 2 - app.width // 4,
-        app.height // 2 + 2 * (app.height // 12) + 2 * app.height // 24,
-        app.width // 2 + app.width // 4,
-        app.height // 2 + 3 * (app.height // 12) + 2 * app.height // 24,
-        fill="Black", outline="white", width=5
-    )
-    # read docs button text centered in the button
-    canvas.create_text(
-        app.width // 2,
-        #avg of the y0 y1 of the read docs button,
-        ((app.height // 2 + 3 * (app.height // 12) + 2 * app.height // 24) + (app.height // 2 + 2 * (app.height // 12) + 2 * app.height // 24)) // 2,
-        text="Read Documenation",
-        fill="white",
-        font="Arial 20",
-        anchor= "c"
-    )
-
 def titleMousePressed(app, event):
     x, y = event.x, event.y
     #detect if the user clicked on the docs button
@@ -128,8 +112,6 @@ def titleMousePressed(app, event):
     tutorialMinY = app.height // 2 + app.height // 12 + app.height // 24
     tutorialMaxY = app.height // 2 + 2 * (app.height // 12) + app.height // 24
 
-    readDocsMinY = app.height // 2 + 2 * (app.height // 12) + 2 * app.height // 24
-    readDocsMaxY = app.height // 2 + 3 * (app.height // 12) + 2 * app.height // 24
     if x > app.width // 2 - app.width // 4 and x < app.width // 2 + app.width // 4:
         if playMinY < y < playMaxY:
             app.title = False
@@ -137,9 +119,7 @@ def titleMousePressed(app, event):
         elif tutorialMinY < y < tutorialMaxY:
             app.title = False
             app.isTutorial = True
-        elif readDocsMinY < y < readDocsMaxY:
-            app.title = False
-            app.isDocs = True
+
 
 def drawViewHUD(app, canvas, player):
     """
@@ -181,3 +161,73 @@ def drawViewHUD(app, canvas, player):
         text="DEFENSE: " + str(player.defense), 
         fill="black", font="Arial 20 bold", anchor= "c"
         )
+    #Draw the players exp and next level in the right section
+    canvas.create_text(
+        5 * app.width // 6 + app.width // 12, app.height - app.height // 8,
+        text="EXP: " + str(player.exp) + " / " + str(player.nextLevel),
+        fill="black", font="Arial 20 bold", anchor= "c"
+        )
+    #Draw the players score in the right section below the exp
+    canvas.create_text(
+        5 * app.width // 6 + app.width //12, app.height - app.height // 12 + app.height // 24,
+        text="SCORE: " + str(app.score),
+        fill="black", font="Arial 20 bold", anchor= "c"
+        )
+
+def titleKeyPressed(app, event):
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    alphabet2 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    if event.key in alphabet or event.key in alphabet2: 
+        app.playerName += event.key.upper()
+    elif event.key == "BackSpace":
+        app.playerName = app.playerName[:-1]
+    elif event.key == "Space":
+        app.playerName += " "
+    elif event.key == "Return":
+        app.title = False
+        app.isView = True
+
+
+def drawGameOver(app, canvas):
+    canvas.create_rectangle(0, 0, app.width, app.height, fill="Black")
+    canvas.create_text(app.width // 2, app.height // 2, 
+        text="YOU DIED :(", fill="red", font="Arial 40 bold", anchor= "c")
+    canvas.create_text(app.width // 2, app.height // 2 + app.height // 24,
+        text="Score: " + str(app.score), fill="red", font="Arial 20 bold", anchor= "c")
+
+def gameOverKeyPressed(app, event):
+    if event.key == "Space":
+        app.gameOver = False
+        app.titleScreen = True
+
+def drawTutorial(app, canvas):
+    canvas.create_rectangle(0, 0, app.width, app.height, fill="Black")
+    canvas.create_text(app.width // 2, 0, anchor="n", text="TUTORIAL", fill="white", font="Arial 40 bold")
+    canvas.create_text(app.width // 2, app.height // 16, anchor="n", text="""
+        Use w and s to move forwards and backwards; use a and d to turn left and right. 
+        There is a chance that on every forward movement you will encounter an enemy (daniel)! 
+        When in combat, press 1 to attack, and 2 to block attacks. 
+        Or 3 to flee from the scene, and 4 to do nothing and cry about it.
+        After you attack the enemy, the enemy will attack you back. 
+        Your health will be restored when you level up. 
+        Enemy stats scale with the number of levels you have played. 
+        Your stats will scale with the amount of enemies you defeat (still, only Daniel, lol). 
+        See documentation for more detailed information on the combat system. 
+
+        Progress through levels by walking through purple walls (the ones that kinda look
+        like minecraft nether portals). Walking through them will increase the score and 
+        generate a new level which is slightly bigger than the previous one. 
+        Please see the documentation for more detailed information.
+
+        Special thanks to Daniel, my mentor TA, and Zachary, who served as a wonderful rubber duck. 
+
+        And with that, good luck! I hope you enjoy the game.
+
+        [Press Space to return to title]
+        """, fill="white", font="Arial 20 bold")
+
+def tutorialKeyPressed(app, event):
+    if event.key == "Space":
+        app.tutorial = False
+        app.title = True
+

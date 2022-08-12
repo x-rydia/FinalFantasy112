@@ -8,7 +8,7 @@ import math
 from graphics.textures import *
 from tkinter import PhotoImage
 from PIL import ImageTk
-from levels.towerlevel import *
+
 from combat.combat_view import *
 from combat.combat import *
 #There is an error in tkinter that causes a crash due
@@ -28,13 +28,15 @@ from draw import *
 ###### MODEL ######
 def appStarted(app, title=True):
     app.score = 0
-    app.level = Level(15 + 3*app.score, 15 + 3*app.score, 10, 100, 3)
+    app.rows = 15 + 3*app.score
+    app.cols = 15 + 3*app.score
+    app.level = Level(app.rows, app.cols, 10, 100, 3)
     x, y = app.level.spawnPlayer()
     app.level.placeDoor()
 
     app.view = View(app.level.map, x, y, app)
     app.player = Player(app.view, [], 25, 95, 3)
-    app.playerName = "PLAYER_NAME"
+    app.playerName = ""
     app.lines = cast(app)
 
     app.tp = TEST1
@@ -48,8 +50,8 @@ def appStarted(app, title=True):
     app.complements = app.tp.horizontalWallTextures
 
     app.miniMapState = False
-    app.miniMapCellWidth = app.height // app.level.rows
-    app.miniMapCellHeight = app.height // app.level.cols
+    app.miniMapCellWidth = app.height // app.cols
+    app.miniMapCellHeight = app.height // app.rows
 
 
     #STATES 
@@ -58,30 +60,55 @@ def appStarted(app, title=True):
     app.isView = False if title == True else True 
     app.isDocs = False
     app.isTutorial = False
+    app.gameOver = False
     app.victoryMessage = ""
     app.player.gague = 10
     app.newLevel = False
+
+def partialRestart(app):
+    """
+    reset level but not player
+    """
+    app.rows = 15 + 3*app.score
+    app.cols = 15 + 3*app.score
+    app.level = Level(app.rows, app.cols, 10, 100, 3)
+    app.miniMapCellWidth = app.height // app.cols
+    app.miniMapCellHeight = app.height // app.rows
+
+    x, y = app.level.spawnPlayer()
+    app.level.placeDoor() 
+    app.view = View(app.level.map, x, y, app)
+    app.lines = cast(app)
 
 
 #### END MODEL ####
 
 ##### CONTROLLER #####
 def keyPressed(app, event):
-    if app.title: return 
-    if app.newLevel: 
+    if app.title: 
+        titleKeyPressed(app, event) 
+    elif event.key == "g":
+        app.gameOver = True
+    elif app.newLevel: 
         app.newLevel = False
-        appStarted(app, title=False) 
-    if event.key == "n":
+        partialRestart(app)
+    elif app.isTutorial:
+        tutorialKeyPressed(app, event)
+    elif event.key == "n":
         appStarted(app, title=False)
-    if event.key == "p":
+    elif event.key == "p":
         randomEncounter(app, app.player, p=1)
-    if app.isCombat:
+    elif app.isCombat:
         combatKeyPressed(app, event)
     
     elif app.victory:
         victoryKeyPressed(app, event)
-
-    elif not app.isCombat:
+    elif app.gameOver:
+        if event.key == "Space":
+            print("restart")
+            app.gameOver = False
+            appStarted(app, title=True)
+    else:
         viewKeyPressed(app, event)
         app.lines = cast(app)
 
@@ -103,6 +130,9 @@ def redrawAll(app, canvas):
 
         if app.isCombat and not app.victory:
             drawCombatHeadsUpDisplay(app, canvas, app.player, app.enemy)
+    elif app.gameOver:
+        drawGameOver(app, canvas)
+
     elif app.victory:
         drawFloor(app, canvas, img=False)
         drawCeiling(app, canvas)
@@ -121,7 +151,7 @@ def redrawAll(app, canvas):
         pass
 
     elif app.isTutorial:
-        pass
+        drawTutorial(app, canvas)
 
 #### END VIEW #######
 

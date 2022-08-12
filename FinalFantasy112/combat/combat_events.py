@@ -33,22 +33,31 @@ def combatKeyPressed(app, event):
                 app.player.levelUp()
                 app.victoryMessages = [
                     f"Congratulations, {app.playerName}! You have defeated {app.enemy.name}!",
-                    f"You gained {app.enemy.exp} experience points!",
-                    f"And are {app.player.nextLevel - app.player.exp} exp from leveling up!"
+                    f"You gained {app.enemy.exp} experience points!"
                 ]
                 app.isCombat = False
                 return 
                 #Enemy turn
             app.enemy.attackEntity(app.player)
+            if app.player.isDead():
+                app.isCombat = False
+                app.gameOver = True
+                return
             
     
     elif event.key == "3":
         if app.player.isTurn:
             app.player.resetGague()
-            app.enemy.attackEntity(app.player)
+            
             if app.player.flee():
                 app.isCombat = False
                 return 
+            
+            app.enemy.attackEntity(app.player)
+            if app.player.isDead():
+                app.isCombat = False
+                app.gameOver = True
+                return
                 
     
     elif event.key == "4":
@@ -64,6 +73,7 @@ def combatTimerFired(app):
         return
     if not app.player.isTurn: 
         app.player.gagueUp()
+
 
 
 def victoryKeyPressed(app, event):

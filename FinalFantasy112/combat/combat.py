@@ -116,11 +116,11 @@ class Player(Entity):
     def levelUp(self):
         """Level up the player"""
         if self.exp >= self.nextLevel:
-            self.attack *= 1.1
+            self.attack = round(1.1 * self.attack, 2)
             self.hitpoints = self.maxHitpoints
-            self.defense *= 1.1
+            self.defense = round(1.1 * self.defense, 2)
             self.dG += 1
-            self.nextLevel *= 1.1
+            self.nextLevel = round(1.1 * self.nextLevel, 2)
             self.exp = 0
     
 

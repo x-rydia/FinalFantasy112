@@ -160,47 +160,58 @@ class Level:
     def spawnPlayer(self):
         """return a point that is not inside any wall"""
         while True:
-            x = random.randint(1, self.cols-2)
-            y = random.randint(1, self.rows-2)
+            x = random.randint(1, self.cols-2) 
+            y = random.randint(1, self.rows-2) 
             if self.map[y][x] == 0 and self.map[y+1][x] == 0 and self.map[y-1][x] == 0 \
                     and self.map[y][x+1] == 0 and self.map[y][x-1] == 0:
-                self.plrX, self.plrY = x, y
+                self.plrX, self.plrY = x, y 
                 return (x, y)
         
 
-    def placeDoor(self):
+
+    def placeDoor(self, n=3):
         """
         get the set of all walls that can be walked to and make one of them a door
+
+        https://en.wikipedia.org/wiki/Breadth-first_search
+        https://algorithms.tutorialhorizon.com/breadth-first-search-bfs-in-2d-matrix-2d-array/
+
+        also looked at course notes on backtracking, but that solution was a pain because i 
+        increased the max recursion depth, causing me to somehow get a segmentation fauly in 
+        python--which I did not know is posisble. 
         """
-        x = self.plrX
-        y = self.plrY
-        walkable = set()
-        walkable.add((x, y))
-        done = False
-        dirs = [(1, 0), (-1, 0), (0, 1), (0, -1)]
-        while not done:
-            newWalkable = set()
-            for dir in dirs:
-                x2 = x + dir[0]
-                y2 = y + dir[1]
-                if self.map[y2][x2] == self.textureValue:
-                    newWalkable.add((x2, y2))
-            if len(newWalkable) > 0:
-                walkable.update(newWalkable)
-            else:
-                done = True
-        print("walkable: ", walkable)
-        x, y = random.choice(list(walkable))
-        print("x, y: ", x, y)
-        self.map[y][x] = 5
+        dirs = [(1,0), (-1,0), (0,1), (0,-1)]
 
+        map = self.map        
+        directions = set([(1,0), (-1,0), (0,1), (0,-1)])
+        queue = [(self.plrY, self.plrX)]
+        seen = set()
+        accessibleWalls = set()
+        # queue will be empty once there are no more empty cells to travel 
+        # to. All accessible walls will have been append to accessibleWalls
+        # I think there is a chance that this will finish before all accessible walls are found,
+        # but because it generates a list that does not include any UNACCESSIBLE walls, it is not
+        # an issue
+        while queue:
+            current = queue.pop(0)
+            seen.add(current)
+            print("current: ", current)
+            for d in directions:
+                nRow = current[0] + d[0]
+                nCol = current[1] + d[1]
 
+                if (nRow, nCol) not in seen:
+                    #If visited cell is a wall, add to accessible walls
+                    if map[nRow][nCol] == self.textureValue:
+                        accessibleWalls.add((nRow, nCol))
+                    #If visited cell is not a wall, add to queue
+                    elif map[nRow][nCol] == 0:
+                        queue.append((nRow, nCol))
 
-        
-
-
-
-        
+        for d in range(n):
+            doorRow, doorCol = random.choice(list(accessibleWalls))
+            self.map[doorRow][doorCol] = 5
+            print(doorRow, doorCol)
 
         
     def __str__(self) -> str:
